@@ -50,7 +50,7 @@ struct ConversationView: View {
 
     var body: some View {
         VStack {
-            if conversation.isListening {
+          if (conversation.isListening || (conversation.getClient().getConnector() != nil && conversation.getClient().getConnector()!.getConnection().signalingState == .stable)) {
                 Text("Listening...")
                 .font(.headline)
                 .foregroundColor(.blue)
@@ -60,7 +60,7 @@ struct ConversationView: View {
                 .cornerRadius(8)
 
             } else {
-                Text("Initializing...")
+                Text("Pick one!")
                 .font(.headline)
                 .foregroundColor(.blue)
                 .padding()
@@ -76,22 +76,34 @@ class ConversationViewModel: ObservableObject {
   @Published var conversation: Conversation?
       
   func initWebSocket() {
-        Task {
-          let conversation = Conversation(authToken: OPENAI_API_KEY)
-            DispatchQueue.main.async {
-                self.conversation = conversation
-                try! conversation.startListening()
-            }
-        }
+    Task {
+      let conversation = Conversation(authToken: OPENAI_API_KEY)
+      DispatchQueue.main.async {
+          self.conversation = conversation
+          try! conversation.startListening()
+      }
     }
+  }
+  
+  func endWebSocket() {
+    Task {
+      await conversation?.stopHandlingVoice()
+    }
+  }
+
+  func endWebRTC() {
+    Task {
+      self.conversation?.getClient().getConnector()!.getConnection().close()
+    }
+  }
   
   func initWebRTC() {
-      Task {
-        let conversation = await Conversation(authToken: OPENAI_API_KEY, webRTC: true)
-          DispatchQueue.main.async {
-              self.conversation = conversation
-          }
+    Task {
+      let conversation = await Conversation(authToken: OPENAI_API_KEY, webRTC: true)
+      DispatchQueue.main.async {
+          self.conversation = conversation
       }
+    }
   }
 }
 
@@ -100,7 +112,8 @@ struct ContentView: View {
   @StateObject private var viewModel = ConversationViewModel()
   @State private var newMessage: String = ""
   @State private var status: String = "Pick one!"
-  @State private var areButtonsEnabled = true
+  @State private var isWebSocketButtonTapped = false
+  @State private var isWebRTCButtonTapped = false
   
   var messages: [Item.Message] {
     viewModel.conversation?.entries.compactMap { switch $0 {
@@ -112,54 +125,68 @@ struct ContentView: View {
   var body: some View {
     VStack(spacing: 20) {
       ScrollView {
-                VStack(spacing: 12) {
-                    ForEach(messages, id: \.id) { message in
-                        MessageBubble(message: message)
-                    }
-                }
-                .padding()
+        VStack(spacing: 12) {
+            ForEach(messages, id: \.id) { message in
+                MessageBubble(message: message)
+            }
+        }
+        .padding()
       }
       .frame(maxHeight: 500)
 
       HStack(spacing: 12) {
-        
         Button(action: {
-          status = "Initializing WebSocket..."
-          viewModel.initWebSocket()
-          areButtonsEnabled = false
+            if !isWebSocketButtonTapped {
+                status = "Initializing WebSocket..."
+                viewModel.initWebSocket()
+                isWebSocketButtonTapped = true
+                isWebRTCButtonTapped = false
+            } else {
+                status = "Pick one!"
+                viewModel.endWebSocket()
+                isWebSocketButtonTapped = false
+            }
         }) {
-            Text("WebSocket")
+            Text(isWebSocketButtonTapped ? "End" : "WebSocket")
                 .font(.title2)
                 .foregroundColor(.white)
                 .padding()
                 .frame(maxWidth: .infinity)
-                .background(areButtonsEnabled ? Color.green : Color.gray)
+                .background(isWebSocketButtonTapped ? Color.red : (isWebRTCButtonTapped ? Color.gray : Color.green))
                 .cornerRadius(8)
         }
-        .disabled(!areButtonsEnabled)
+        .disabled(isWebRTCButtonTapped)
         
         Spacer()
         
         Button(action: {
-          status = "Initializing WebRTC..."
-          viewModel.initWebRTC()
-          areButtonsEnabled = false
+          if !isWebRTCButtonTapped {
+              status = "Initializing WebRTC..."
+              viewModel.initWebRTC()
+              isWebRTCButtonTapped = true
+              isWebSocketButtonTapped = false
+          } else {
+            status = "Pick one!"
+            viewModel.endWebRTC()
+            isWebRTCButtonTapped = false
+          }
         }) {
-            Text("WebRTC")
+            Text(isWebRTCButtonTapped ? "End" : "WebRTC")
                 .font(.title2)
                 .foregroundColor(.white)
                 .padding()
                 .frame(maxWidth: .infinity)
-                .background(areButtonsEnabled ? Color.green : Color.gray)
+                .background(isWebRTCButtonTapped ? Color.red : (isWebSocketButtonTapped ? Color.gray : Color.green))
                 .cornerRadius(8)
         }
-        .disabled(!areButtonsEnabled)
+        .disabled(isWebSocketButtonTapped)
       }
       .padding()
       
       if let conversation = viewModel.conversation {
           ConversationView(conversation: conversation)
-      } else {
+      }
+      else {
         Text(status)
           .font(.headline)
           .foregroundColor(.blue)

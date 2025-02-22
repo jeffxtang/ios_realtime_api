@@ -2,7 +2,7 @@
 
 The app uses my [fork](https://github.com/jeffxtang/swift-realtime-openai) of the Swift SDK for OpenAI's Realtime API package [here](https://github.com/m1guelpf/swift-realtime-openai) to support both WebRTC and WebSocket.
 
-If you need to add the package in your own app (or readd to this app), open the project in Xcode, select your project > Package Dependencies, click the +, enter https://github.com/jeffxtang/swift-realtime-openai.git, and click Add Packages.
+If you need to add the package in your own app (or readd to this app), open the project in Xcode, select your project > Package Dependencies, click the +, enter https://github.com/jeffxtang/swift-realtime-openai.git (or https://github.com/m1guelpf/swift-realtime-openai after the [PR](https://github.com/m1guelpf/swift-realtime-openai/pull/26) is merged), and click Add Packages.
 
 Credit also to the OpenAIOSRealtimeAPIDemo repo [here](https://github.com/fuwei007/OpenAIIOSRealtimeAPIDemo/tree/main/SwftDemo/RealTim-WebRTC).
 

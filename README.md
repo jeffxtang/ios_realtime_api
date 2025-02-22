@@ -4,7 +4,7 @@ The app uses my [fork](https://github.com/jeffxtang/swift-realtime-openai) of th
 
 If you need to add the package in your own app (or readd to this app), open the project in Xcode, select your project > Package Dependencies, click the +, enter https://github.com/jeffxtang/swift-realtime-openai.git (or https://github.com/m1guelpf/swift-realtime-openai after the [PR](https://github.com/m1guelpf/swift-realtime-openai/pull/26) is merged), and click Add Packages.
 
-Credit also to the OpenAIOSRealtimeAPIDemo repo [here](https://github.com/fuwei007/OpenAIIOSRealtimeAPIDemo/tree/main/SwftDemo/RealTim-WebRTC).
+Credit also to the WebRTC example in the OpenAIOSRealtimeAPIDemo repo [here](https://github.com/fuwei007/OpenAIIOSRealtimeAPIDemo/blob/main/SwftDemo/RealTim-WebRTC/RealTimeApiWebRTCMainVC.swift).
 
 To run the app, simply open the project in Xcode, replace OPENAI_API_KEY in ContentView.swift with your key, set your iOS signing team, and build and run on your iPhone. The audio chat with OpenAI Realtime API can't run on iOS simulator.
 

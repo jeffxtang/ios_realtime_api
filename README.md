@@ -13,5 +13,4 @@ To run the app, simply open the project in Xcode, replace OPENAI_API_KEY in Cont
 ![](screenshot3.png)
 
 ## License
-
 MIT

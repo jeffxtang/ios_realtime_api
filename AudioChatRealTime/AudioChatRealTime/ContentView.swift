@@ -11,7 +11,7 @@ import SwiftUI
 import OpenAI
 import SwiftUI
 
-let OPENAI_API_KEY = "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"
+let OPENAI_API_KEY = "xxxx"
 
 
 struct MessageBubble: View {
@@ -46,7 +46,7 @@ struct MessageBubble: View {
 }
 
 struct ConversationView: View {
-    @Bindable var conversation: Conversation  
+    @Bindable var conversation: Conversation
 
     var body: some View {
         VStack {

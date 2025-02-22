@@ -1,4 +1,4 @@
-# iOS demo of WebSocket and WebRTC with OpenAI Realtime API.
+# iOS WebSocket & WebRTC with OpenAI Realtime API
 
 The app uses my [fork](https://github.com/jeffxtang/swift-realtime-openai) of the Swift SDK for OpenAI's Realtime API package [here](https://github.com/m1guelpf/swift-realtime-openai) to support both WebRTC and WebSocket.
 
